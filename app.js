@@ -14,18 +14,17 @@ const userRoutes = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const swaggerSpecs = require('./swagger');
+const errorHandler = require('./middleware/errorHandler');
 
 // Initialize express app
 const app = express();
 const PORT = process.env.PORT || 3000;
-// const server = http.createServer(app);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Swagger documentation route
-
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 mongoose.connect(process.env.MONGO_URI, {})
@@ -39,6 +38,9 @@ app.get('/', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/analytics', analyticsRoutes);
+
+// Use the error handling middleware
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {

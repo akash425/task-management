@@ -6,9 +6,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['Admin', 'Manager', 'User'], default: 'User' },
+  mobile: { type: String },
   notificationPreferences: {
     email: { type: Boolean, default: true },
-    inApp: { type: Boolean, default: true },
+    sms: { type: Boolean, default: true },
   },
 }, { timestamps: true });
 

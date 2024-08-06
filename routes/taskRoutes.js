@@ -5,20 +5,6 @@ const { authenticate } = require('../middleware/auth');
 const { authorize } = require('../middleware/rbac');
 
 router.post('/', authenticate, taskController.createTask);
-/**
- * @swagger
- * /api/tasks:
- *   get:
- *     summary: Get all tasks
- *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of tasks
- *       401:
- *         description: Unauthorized
- */
 router.get('/', authenticate, taskController.getTasks);
 router.get('/:id', authenticate, taskController.getTask);
 router.put('/:id', authenticate, taskController.updateTask);
