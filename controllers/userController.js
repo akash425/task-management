@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Blacklist = require('../models/Blacklist');
+const client = require('../utils/redisClient');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { AppError, NotFoundError, ValidationError } = require('../utils/customErrors');
@@ -59,6 +60,17 @@ exports.login = async (req, res, next) => {
     }
 };
 
+const blacklistToken = (token) => {
+    const decoded = jwt.decode(token);
+    if (decoded && decoded.exp) {
+        const expirationTime = decoded.exp - Math.floor(Date.now() / 1000);
+        client.setex(token, expirationTime, 'blacklisted', (err, reply) => {
+            if (err) throw err;
+            console.log('Token blacklisted: ', reply);
+        });
+    }
+};
+
 /**
  * Logs out the user and sends a JSON response indicating success.
  *
@@ -69,7 +81,8 @@ exports.login = async (req, res, next) => {
 exports.logout = async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1]; // Adjust according to your token format
     if (token) {
-        await Blacklist.create({ token });
+        blacklistToken(token);
+        // await Blacklist.create({ token });
     }
     res.json({ message: 'Logged out successfully' });
 };
